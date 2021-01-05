@@ -53,7 +53,7 @@ namespace FilmShare.Controllers{
                 
             }
             
-            return Redirect("/film");
+            return RedirectToAction("Film");
         }
 
         public IActionResult Index()
