@@ -1,0 +1,49 @@
+@model FilmModel
+@{
+    ViewBag.Title = "Film";
+    Layout = "_Layout";
+}
+
+<h2>Film is here</h2>
+<video width="1280" height="720" controls>
+    <source src="wwwroot/files/film.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+</video>
+
+@section Scripts{
+    <script src="~/lib/signalr/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/film").build();
+    
+    //Disable send button until connection is established
+    document.getElementById("sendButton").disabled = true;
+    
+    connection.on("ReceiveFilmTiming", function (timing) {
+        // Parse timing here
+    });
+    
+    connection.on("ReceiveStart", function () {
+            // Acrion on start here
+        });
+    
+    connection.on("ReceivePause", function () {
+            // Action on pause here
+        });
+    
+    connection.start().then(function () {
+        document.getElementById("sendButton").disabled = false;
+    }).catch(function (err) {
+        return console.error(err.toString());
+    });
+    
+    document.getElementById("sendButton").addEventListener("click", function (event) {
+        var user = document.getElementById("userInput").value;
+        var message = document.getElementById("messageInput").value;
+        connection.invoke("SendTiming", user, message).catch(function (err) {
+            return console.error(err.toString());
+        });
+        event.preventDefault();
+    });
+    </script>
+}

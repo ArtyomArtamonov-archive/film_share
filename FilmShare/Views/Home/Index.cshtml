@@ -1,0 +1,15 @@
+﻿@using System.Text.Json.Serialization
+@using Newtonsoft.Json
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="text-center">
+    
+    <h3>Выберите файл для загрузки</h3>
+    <form asp-action="UploadFile" asp-controller="Home" method="post" enctype="multipart/form-data">
+        <input type="file" name="uploadedFile" accept="video/mp4"/><br>
+        <input type="submit" value="Загрузить" />
+    </form>
+    
+</div>
