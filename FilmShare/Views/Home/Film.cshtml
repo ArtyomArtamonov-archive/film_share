@@ -5,8 +5,8 @@
 }
 
 <h2>Film is here</h2>
-<video width="1280" height="720" controls>
-    <source src="wwwroot/files/film.mp4" type="video/mp4">
+<video width="100%" height="100%" controls>
+    <source src="/Home/FilmStream" type="video/mp4">
     Your browser does not support the video tag.
 </video>
 
@@ -31,19 +31,17 @@
             // Action on pause here
         });
     
-    connection.start().then(function () {
-        document.getElementById("sendButton").disabled = false;
-    }).catch(function (err) {
+    connection.start().then().catch(function (err) {
         return console.error(err.toString());
     });
     
-    document.getElementById("sendButton").addEventListener("click", function (event) {
-        var user = document.getElementById("userInput").value;
-        var message = document.getElementById("messageInput").value;
-        connection.invoke("SendTiming", user, message).catch(function (err) {
-            return console.error(err.toString());
-        });
-        event.preventDefault();
-    });
+    // document.getElementById("sendButton").addEventListener("click", function (event) {
+    //     var user = document.getElementById("userInput").value;
+    //     var message = document.getElementById("messageInput").value;
+    //     connection.invoke("SendTiming", user, message).catch(function (err) {
+    //         return console.error(err.toString());
+    //     });
+    //     event.preventDefault();
+    // });
     </script>
 }

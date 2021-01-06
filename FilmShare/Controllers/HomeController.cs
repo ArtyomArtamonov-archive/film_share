@@ -34,13 +34,12 @@ namespace FilmShare.Controllers{
         }
         
         [HttpPost]
-        [RequestFormLimits(MultipartBodyLengthLimit = 20971520000)]
         public async Task<IActionResult> UploadFile(IFormFile uploadedFile){
             if (uploadedFile != null)
             {
                 // путь к папке files
                 string path = "/files/" + uploadedFile.FileName;
-                // сохраняем файл в папку Files в каталоге wwwroot
+                // сохраняем файл в папку files в каталоге wwwroot
                 using (var fileStream = new FileStream(_env.WebRootPath + path, FileMode.Create))
                 {
                     await uploadedFile.CopyToAsync(fileStream);
@@ -64,9 +63,14 @@ namespace FilmShare.Controllers{
         public IActionResult Privacy(){
             return View();
         }
-
-        public IActionResult Film(){
+        
+        public async Task<IActionResult> Film(){
             return View();
+        }
+        
+        public async Task<FileStreamResult> FilmStream(){
+            var stream = System.IO.File.OpenRead("wwwroot/files/film.mp4");
+            return new FileStreamResult(stream, "video/mp4");
         }
         
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
