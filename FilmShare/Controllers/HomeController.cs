@@ -3,13 +3,19 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using FilmShare.Classes.Attributes;
+using FilmShare.Classes.Helpers;
 using FilmShare.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using FilmShare.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.Net.Http.Headers;
 
 namespace FilmShare.Controllers{
     public class HomeController : Controller{
@@ -30,31 +36,9 @@ namespace FilmShare.Controllers{
             }
 
             await _context.SaveChangesAsync();
-            return Redirect("/film");
+            return Redirect("/Home/Film");
         }
         
-        [HttpPost]
-        public async Task<IActionResult> UploadFile(IFormFile uploadedFile){
-            if (uploadedFile != null)
-            {
-                // путь к папке files
-                string path = "/files/" + uploadedFile.FileName;
-                // сохраняем файл в папку files в каталоге wwwroot
-                using (var fileStream = new FileStream(_env.WebRootPath + path, FileMode.Create))
-                {
-                    await uploadedFile.CopyToAsync(fileStream);
-                }
-                FilmModel file = new FilmModel { Name = uploadedFile.FileName, Path = path };
-                if (_context.Files.FirstOrDefault(x => x.Path == path) == null){
-                    await _context.Files.AddAsync(file);
-                    await _context.SaveChangesAsync();
-                }
-                
-            }
-            
-            return RedirectToAction("Film");
-        }
-
         public IActionResult Index()
         {
             return View(_context.Files.ToList());
@@ -68,14 +52,6 @@ namespace FilmShare.Controllers{
             return View();
         }
         
-        public async Task<FileStreamResult> FilmStream(){
-            var stream = System.IO.File.OpenRead("wwwroot/files/film.mp4");
-            return new FileStreamResult(stream, "video/mp4");
-        }
         
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error(){
-            return View(new ErrorViewModel{RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier});
-        }
     }
 }
