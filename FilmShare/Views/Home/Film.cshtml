@@ -5,10 +5,13 @@
 }
 
 <h2>Film is here</h2>
-<video width="100%" height="100%" controls>
-    <source src="/Stream/FilmStream" type="video/mp4">
+<video width="100%" height="100%" id="video" controls>
+    <source src="/Stream/FilmStream" type="video/mp4" >
     Your browser does not support the video tag.
 </video>
+<button id="sync" onclick="sync">
+    SyncMe
+</button>
 
 @section Scripts{
     <script src="~/lib/signalr/signalr.js"></script>
@@ -17,18 +20,33 @@
     var connection = new signalR.HubConnectionBuilder().withUrl("/film").build();
     
     //Disable send button until connection is established
-    document.getElementById("sendButton").disabled = true;
+    var video = document.getElementById("video");
+    video.addEventListener("play", function (){
+        connection.send("SendStart")    
+        console.log("Send start")
+    })
+    video.addEventListener("pause", function (){
+        connection.send("SendPause")    
+        console.log("Send pause")
+    })
+    function sync(){
+        connection.send("SendTiming", video.currentTime)   
+        console.log("Send timing") 
+    }
     
     connection.on("ReceiveFilmTiming", function (timing) {
-        // Parse timing here
+        video.currentTime = timing
+        console.log("Received timing")
     });
     
     connection.on("ReceiveStart", function () {
-            // Acrion on start here
+            video.play();
+            console.log("Received play")
         });
     
     connection.on("ReceivePause", function () {
-            // Action on pause here
+            video.pause();
+            console.log("Received pause")
         });
     
     connection.start().then().catch(function (err) {
